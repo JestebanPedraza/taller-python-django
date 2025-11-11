@@ -160,8 +160,191 @@ En la template products.html:
 </body>
 ```
 - Agregamos el path de la url de la nueva vista en archivo urls.py: `.. path('inventario/products', views.products), ...`
-- Probamos yendo a la url recién creada
+- Probamos la url recién creada
 ___
 ## 5. Trabajando con formularios de Django
-- Debemos abrir el archivo el archivo forms.py que creamos previamente y registramos una clase form en base al modelo previamente creado
+- Primero que todo vamos a modificar el urls.py, debemos asignar un nombre a cada url para facilitar el uso de direcciones en django:
+```
+from django.urls import path
+from . import views
 
+app_name = 'inventario'
+
+urlpatterns = [
+    path('inventario', views.helloworld, name="hello"),
+    path('inventario/ejemplo', views.ejemploreal, name="ejemplo"),
+    path('inventario/products', views.products, name="products"),
+]
+```
+- Luego, debemos abrir el archivo el archivo forms.py que creamos previamente y registramos una clase form en base al modelo previamente creado y registrar nuestro primer formulario del modelo:
+```
+from django import forms
+from .models import Product
+
+class ProductForm(forms.ModelForm):
+    """Formulario para el modelo Product."""
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+ 
+```
+- Creamos una nueva template para crear el formulario: `create_product.html` y creamos el html de la página:
+```
+<body>
+    <h2>Crear un producto</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" value="Enviar">
+    </form>
+</body>
+```
+- Creamos la vista en el views.py:
+```
+def create_product(request):
+    if (request.method== "GET"):
+        form = ProductForm()
+        return render(request, 'create_product.html', {'form': form})
+    else:
+        form = ProductForm(request.POST)
+        if (form.is_valid()):
+            form.save()
+            return redirect('invetario:products') 
+```
+- Registramos esta nueva función en el urls.py: `...path('inventario/create_product', views.create_product, name="create_product"),...`
+- Actualizamos nuestra página de productos para agregar un link que nos permita ir a la página de crear producto:
+```
+<body>
+    <h2>Lista de productos</h2>
+    <a href="{% url 'inventario:create_product' %}">Crear un producto</a>
+    <div>
+        {% for product in products %}
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.description }}<p>
+            <b>{{ product.price }}</b>
+            <hr>
+            <br>
+        {% endfor %}
+    </div>
+</body>
+```
+- Probamos creando un nuevo producto.
+___
+## 6. Vistas basadas en funciones VS Vistas basadas en clases(vista genérica)
+Estaremos explorando las clases genéricas de django y haremos el CRUD completo con ellas para ver lo mucho que nos simplifica.
+- Importamos las librerías necesarias para llamar a los generics: `from django.views.generic import ListView, CreateView, UpdateView, DeleteView` y a `
+from django.urls import reverse_lazy` que lo utilizaremos dentro de las generics para redireccionar
+- Creamos una template nueva para listar productos con la clase genérica: `products_generics.html`
+```
+<body>
+    <h2>Lista de productos</h2>
+    <div>
+        {% for product in products %}
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.description }}<p>
+            <b>{{ product.price }}</b>
+        {% endfor %}
+            
+    </div>
+</body>
+```
+- Creamos una clase para listar los productosy vinculamos la template recién creada:
+```
+class ProductListView(ListView):
+    model = Product
+    template_name='products_generics.html'
+    context_object_name='products'
+
+    def get_queryset(self):
+        return Product.objects.all()
+```
+- Vamos al urls.py y definimos la nueva ruta para acceder a la vista genérica de listar productos: `path('inventario/products-generics', views.ProductListView.as_view(), name="products_generics"),`
+- Probamos accediendo a a dirección `http://127.0.0.1:8000/inventario/products-generics`
+> [!NOTE]
+> Podemos reutilizar la template del formulario de create para las siguientes vistas create y update
+- Vamos a crear las vistas Create y Update, ellas estarán relacionadas con la misma template, ya que necesitan el mismo formulario
+```
+class ProductCreateView(CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'create_product.html'
+    success_url = reverse_lazy('inventario:products_generics')
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return super().form_valid(form)
+    
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'create_product.html'
+    success_url = reverse_lazy('inventario:products_generics')
+```
+- Vamos al urls.py y definimos la ruta para crear un producto:
+```
+...
+path('inventario/create-products-generics', views.ProductCreateView.as_view(), name="create_products_generics"),
+...
+```
+- Agregamos un botón para crear un producto en la página de productos:
+```
+...
+<body>
+    <h2>Lista de productos</h2>
+    <a href="{% url 'inventario:create_products_generics' %}">Crear un producto</a>
+...
+```
+- Probamos creando un producto.
+- Ahora vamos a definir la ruta para Editar un producto:
+> [!IMPORTANT]
+> Para editar un producto debemos pasar el ID del producto como parámetro para que la base de datos identifique el producto que se quiere editar y se carguen los datos del mismo.
+Por suerte Django nos permite enviar estos valores mediante la url agregando `/<int:pk>` donde lo que va antes de los dos puntos el el tipo de dato, y después de los dos puntos el nombre de la variable. Pero ¿y como enviamos esa variable?
+- Primero dejemos listas las nuevas urls:
+```
+...
+path('inventario/create-products-generics', views.ProductCreateView.as_view(), name="create_products_generics"),
+path('inventario/update-products-generics/<int:pk>', views.ProductUpdateView.as_view(), name="update_products_generics"),
+...
+```
+- Ahora si, creemos un botón para Editar el producto:
+```
+...
+<b>{{ product.price }}</b>
+<a href="{% url 'inventario:update_products_generics' pk=product.id %}">Editar</a>
+...
+```
+El ID del producto se lo enviamos mediante la url. El nombre de la variable debe ser igual al que definimos en la url del path
+- Listo, probamos dando clic en el botón Editar
+Ahora solo falta crear la vista para eliminar un producto.
+- Creamos la vista:
+```
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = 'product_confirm_delete.html'
+    success_url = reverse_lazy('inventario:products_generics')
+```
+Ahora, las vista genérica Delete siempre va pedir cargar una template o un modal con un formulario para confirmar la eliminación. Por ende, crearemos una nueva template.
+- Creamos la template: `product_confirm_delete.html` y dentro escribimos algo así:
+```
+<h2>¿Seguro que quieres eliminar este producto?</h2>
+<p><strong>{{ product.name }}</strong></p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, eliminar</button>
+    <a href="{% url 'inventario:products_generics' %}">Cancelar</a>
+</form>
+```
+- Por último, agregamos un botón para poder eliminar un producto en la página donde mostramos cada producto
+```
+...
+<b>{{ product.price }}</b>
+<a href="{% url 'inventario:update_products_generics' pk=product.id %}">Editar</a>
+<a href="{% url 'inventario:delete_products_generics' pk=product.id %}">Eliminar</a>
+...
+```
+---
+## ✨ ¡Felicidades! ✨
+Has terminado tu primera aplicación en Django y haz realizado todas las operaciones de un CRUD 👏
+---
