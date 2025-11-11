@@ -1,0 +1,68 @@
+# =========================
+# ARCHIVOS DE PYTHON
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# ENTORNOS VIRTUALES
+# =========================
+venv/
+env/
+.venv/
+.env/
+
+# =========================
+# ARCHIVOS DE CONFIGURACIÓN / VARIABLES SECRETAS
+# =========================
+*.env
+*.ini
+*.cfg
+*.local
+.env.*
+
+# =========================
+# ARCHIVOS DE BASE DE DATOS LOCALES
+# =========================
+db.sqlite3
+
+# =========================
+# ARCHIVOS DE COMPILACIÓN / CACHE
+# =========================
+*.log
+*.pot
+*.pyc
+*.pyo
+*.mo
+*.pot
+*.db
+*.sqlite3
+
+# =========================
+# CONFIGURACIÓN DE EDITORES / SISTEMAS OPERATIVOS
+# =========================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# =========================
+# MIGRACIONES AUTOMÁTICAS (opcional)
+# Puedes ignorarlas si no deseas subirlas todavía
+# =========================
+# */migrations/
+# !*/migrations/__init__.py
+
+# =========================
+# ARCHIVOS ESTÁTICOS Y DE MEDIOS
+# =========================
+staticfiles/
+media/
+
+# =========================
+# ARCHIVOS DE DEPLOY
+# =========================
+*.bak
+*.swp
+*.tmp

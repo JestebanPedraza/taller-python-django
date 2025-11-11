@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+</head>
+<body>
+    <h2>Lista de productos</h2>
+    <a href="{% url 'inventario:create_products_generics' %}">Crear un producto</a>
+    <div>
+        {% for product in products %}
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.description }}<p>
+            <b>{{ product.price }}</b>
+            <a href="{% url 'inventario:update_products_generics' pk=product.id %}">Editar</a>
+            <a href="{% url 'inventario:delete_products_generics' pk=product.id %}">Eliminar</a>
+        {% endfor %}
+            
+    </div>
+</body>
+</html>
