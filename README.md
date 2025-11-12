@@ -348,3 +348,64 @@ Ahora, las vista genérica Delete siempre va pedir cargar una template o un moda
 ## ✨ ¡Felicidades! ✨
 Has terminado tu primera aplicación en Django y haz realizado todas las operaciones de un CRUD 👏
 ---
+___
+> [!NOTE]
+>  **¡BONUS! Agregando estilos con bootstrap**
+Podemos agregar bootstrap a nuestra app de forma sencilla usando la CDN de bootstrap, para ello debemos definir un layout y que cargue el contenido html que se debe repetir en todas las templates y extender este layout a todas las demas templates.
+- Creamos el layout: `templates/layout.html`
+- Agregamos el contenido html, la CDN de bootstrap y los bloques para incrustar el contenido de otras templates 
+[Dando clic aquí](https://gist.github.com/JestebanPedraza/41490db7ce9dd18ea9cb19efdf11e4c0)
+- Ahora agregaremos estilos a nuestras templates de listar productos y los formularios:
+Template para listar productos:
+[Dando clic aquí](https://gist.github.com/JestebanPedraza/5933136ed400de136a509e895cedd18d)
+Template Formulario:
+```
+{% extends 'layout.html' %} {% block title %}Sistema POS{% endblock %}
+{% block content %}
+    <h2 class="m-4 text-center">Formulario de producto producto</h2>
+
+    <form action="" method="post" class="w-50 mx-auto border rounded p-4 shadow-sm bg-light">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.as_p }}
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </div>
+    </form>
+{% endblock %}
+```
+Sin embargo debemos aplicar estilos a los campos del formulario, pero como este form se genera dinámicamente con la clase genérica tenemos que agregar las clases en el formulario del modelo
+- Vamos a forms.py y agregamos lo siguiente:
+```
+...
+class Meta:
+        model = Product
+        fields = '__all__'
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nombre del producto'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Descripción (opcional)'
+            }),
+            'price': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Precio en USD'
+            }),
+            'stock': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Cantidad disponible'
+            }),
+            'available': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+        }
+```
+---
+## ✨ ¡Felicidades! ✨
+Lograste aprender a añadir estilos de bootstrap a tu aplicación con Django 👏
+---
