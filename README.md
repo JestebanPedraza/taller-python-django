@@ -357,8 +357,10 @@ Podemos agregar bootstrap a nuestra app de forma sencilla usando la CDN de boots
 - Agregamos el contenido html, la CDN de bootstrap y los bloques para incrustar el contenido de otras templates 
 [Dando clic aquí](https://gist.github.com/JestebanPedraza/41490db7ce9dd18ea9cb19efdf11e4c0)
 - Ahora agregaremos estilos a nuestras templates de listar productos y los formularios:
+- 
 Template para listar productos:
 [Dando clic aquí](https://gist.github.com/JestebanPedraza/5933136ed400de136a509e895cedd18d)
+
 Template Formulario:
 ```
 {% extends 'layout.html' %} {% block title %}Sistema POS{% endblock %}
