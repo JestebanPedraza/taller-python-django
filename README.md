@@ -351,6 +351,7 @@ Has terminado tu primera aplicación en Django y haz realizado todas las operaci
 ___
 > [!NOTE]
 >  **¡BONUS! Agregando estilos con bootstrap**
+
 Podemos agregar bootstrap a nuestra app de forma sencilla usando la CDN de bootstrap, para ello debemos definir un layout y que cargue el contenido html que se debe repetir en todas las templates y extender este layout a todas las demas templates.
 - Creamos el layout: `templates/layout.html`
 - Agregamos el contenido html, la CDN de bootstrap y los bloques para incrustar el contenido de otras templates 
