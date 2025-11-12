@@ -1,8 +1,21 @@
-<h2>¿Seguro que quieres eliminar este producto?</h2>
-<p><strong>{{ product.name }}</strong></p>
+{% extends 'layout.html' %} {% block title %}Sistema POS{% endblock %}
+{% block content %}
+<div class="container mt-5 text-center">
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 400px;">
+        <h2 class="mb-3 text-danger">¿Seguro que quieres eliminar este producto?</h2>
+        <p class="mb-4 fs-5">
+            <strong>{{ product.name }}</strong>
+        </p>
 
-<form method="post">
-    {% csrf_token %}
-    <button type="submit">Sí, eliminar</button>
-    <a href="{% url 'inventario:products_generics' %}">Cancelar</a>
-</form>
+        <form method="post" class="d-flex justify-content-center gap-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger px-4">
+                Sí, eliminar
+            </button>
+            <a href="{% url 'inventario:products_generics' %}" class="btn btn-secondary px-4">
+                Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
